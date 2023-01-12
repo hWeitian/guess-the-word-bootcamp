@@ -8,7 +8,7 @@ class NavigationBar extends React.Component {
       <Navbar bg="dark" variant="dark" fixed="top">
         <Container>
           <Navbar.Brand className="m-auto">
-            <h1>Guess The Word 🚀</h1>
+            <h2>Guess The Word 🚀</h2>
           </Navbar.Brand>
         </Container>
       </Navbar>

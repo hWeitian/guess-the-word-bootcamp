@@ -9,7 +9,7 @@ class InputForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      errorMessage: "",
+      errorMessage: null,
       input: "",
       validity: false,
     };
@@ -33,8 +33,6 @@ class InputForm extends React.Component {
       this.props.guessedLetters,
       input
     );
-
-    console.log(input);
 
     if (input.length !== 1 || isCharIncluded || !isNaN(input)) {
       return false;
@@ -82,9 +80,9 @@ class InputForm extends React.Component {
 
   render() {
     return (
-      <div>
+      <Col>
         <Row className="justify-content-md-center">
-          <Col xs lg="5">
+          <Col xs lg="4">
             <Form onSubmit={this.handleSubmit}>
               <Form.Group className="mb-3" controlId="inputLetters">
                 <Form.Control
@@ -113,14 +111,16 @@ class InputForm extends React.Component {
             </Form>
           </Col>
         </Row>
-        <Row className="justify-content-md-center">
-          <Col xs lg="10">
-            <p style={{ fontSize: "0.85rem", color: "yellow" }}>
-              {this.state.errorMessage}
-            </p>
-          </Col>
-        </Row>
-      </div>
+        {this.state.errorMessage !== null ? (
+          <Row className="justify-content-md-center">
+            <Col xs lg="10">
+              <p style={{ fontSize: "0.85rem", color: "yellow" }}>
+                {this.state.errorMessage}
+              </p>
+            </Col>
+          </Row>
+        ) : null}
+      </Col>
     );
   }
 }

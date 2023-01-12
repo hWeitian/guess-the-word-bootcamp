@@ -120,7 +120,9 @@ class App extends React.Component {
                 {this.state.guessedLetters.length > 0
                   ? this.state.guessedLetters.toString()
                   : "-"}
-                <p>Number of Guess left: {10 - this.state.wrongGuess}</p>
+                <p className="mt-3">
+                  Number of Guess left: {10 - this.state.wrongGuess}
+                </p>
                 <InputForm
                   updateGuess={this.updateGuess}
                   addWrongGuess={this.addWrongGuess}
@@ -129,7 +131,9 @@ class App extends React.Component {
                   guessedLetters={this.state.guessedLetters}
                   currWord={this.state.currWord}
                 />
-                {this.generateResultStatement(hasPlayerWon)}
+                <p style={{ fontSize: "1.2rem", margin: 0, padding: 0 }}>
+                  {this.generateResultStatement(hasPlayerWon)}
+                </p>
               </Col>
               <Col>
                 <Hangman wrongGuess={this.state.wrongGuess} />
