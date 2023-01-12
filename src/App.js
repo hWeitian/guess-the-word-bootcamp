@@ -1,6 +1,14 @@
 import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { getRandomWord } from "./utils.js";
 import "./App.css";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+
+import Hangman from "./Components/Hangman.js";
+import NavigationBar from "./Components/NavigationBar.js";
+import InputForm from "./Components/InputForm.js";
 
 class App extends React.Component {
   constructor(props) {
@@ -12,12 +20,8 @@ class App extends React.Component {
       // currWord: "Pneumonoultramicroscopicsilicovolcanoconiosis",
       // guessedLetters stores all letters a user has guessed so far
       guessedLetters: [],
-      // Insert num guesses left state here
-      // Insert form input state here
-      input: "",
       numGuess: 10,
       wrongGuess: 0,
-      errorMessage: "",
     };
   }
 
@@ -34,59 +38,18 @@ class App extends React.Component {
     return wordDisplay.toString();
   };
 
-  // Insert form callback functions handleChange and handleSubmit here
-
-  handleChange = (e) => {
-    let letter = e.target.value;
-
-    const isCharIncluded = this.isCharIncluded(
-      letter,
-      this.state.guessedLetters
-    );
-
-    if (isCharIncluded) {
-      this.setState({
-        errorMessage:
-          "This letter has been guessed previously, please enter another letter",
-      });
-    } else if (letter.length <= 1) {
-      this.setState({
-        input: e.target.value,
-        errorMessage: "",
-      });
-    }
+  addWrongGuess = () => {
+    this.setState((state) => ({
+      wrongGuess: (state.wrongGuess += 1),
+    }));
   };
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-
+  updateGuess = (letter) => {
     this.setState((state) => ({
-      guessedLetters: [...state.guessedLetters, this.state.input],
+      guessedLetters: [...state.guessedLetters, letter],
       numGuess: state.numGuess - 1,
       input: "",
     }));
-
-    const isWrong = this.isCharIncluded(this.state.currWord, this.state.input);
-
-    if (!isWrong) {
-      this.setState((state) => ({
-        wrongGuess: (state.wrongGuess += 1),
-      }));
-    }
-  };
-
-  isCharIncluded = (currWord, currChar) => {
-    const tempObj = {};
-
-    for (let i = 0; i < currWord.length; i += 1) {
-      tempObj[currWord[i]] = true;
-    }
-
-    if (currChar in tempObj) {
-      return true;
-    }
-
-    return false;
   };
 
   checkResults = (currWord, guessedLetters) => {
@@ -110,7 +73,7 @@ class App extends React.Component {
     return lettersMatched;
   };
 
-  resetGame = (playerWon) => {
+  isGameOver = (playerWon) => {
     if (playerWon || this.state.wrongGuess >= 10) {
       return true;
     } else {
@@ -129,30 +92,12 @@ class App extends React.Component {
   };
 
   restartGame = () => {
-    this.setState((state) => ({
+    this.setState({
       currWord: getRandomWord(),
       guessedLetters: [],
       numGuess: 10,
-      input: "",
       wrongGuess: 0,
-    }));
-  };
-
-  displayImage = () => {
-    let img = "";
-    if (this.state.wrongGuess === 0) {
-      return null;
-    } else {
-      const imgCount = this.state.wrongGuess;
-      img = (
-        <img
-          src={require(`./assets/hangman_${imgCount}.png`)}
-          alt="hangman"
-          width="200px"
-        />
-      );
-      return img;
-    }
+    });
   };
 
   render() {
@@ -160,41 +105,37 @@ class App extends React.Component {
       this.state.currWord,
       this.state.guessedLetters
     );
-    const playAgain = this.resetGame(hasPlayerWon) ? (
-      <button onClick={this.restartGame}>Play Again</button>
-    ) : null;
+    const gameOver = this.isGameOver(hasPlayerWon);
     return (
       <div className="App">
+        <NavigationBar />
         <header className="App-header">
-          <h1>Guess The Word 🚀</h1>
-          {this.displayImage()}
-          <h3>Word Display</h3>
-          {this.generateWordDisplay()}
-          <h3>Guessed Letters</h3>
-          {this.state.guessedLetters.length > 0
-            ? this.state.guessedLetters.toString()
-            : "-"}
-          <h3>Input</h3>
-          <h3>Number of Guess left: {10 - this.state.wrongGuess}</h3>
-          <form onSubmit={this.handleSubmit}>
-            <input
-              type="text"
-              onChange={this.handleChange}
-              value={this.state.input}
-              disabled={this.resetGame(hasPlayerWon)}
-              required
-            />
-            <p>
-              {this.state.errorMessage.length >= 1
-                ? this.state.errorMessage
-                : null}
-            </p>
-            <button type="submit" disabled={this.resetGame(hasPlayerWon)}>
-              Submit
-            </button>
-          </form>
-          {this.generateResultStatement(hasPlayerWon)}
-          {playAgain}
+          <Container>
+            <Row>
+              <Col>
+                <h3 style={{ letterSpacing: "1rem" }}>
+                  {this.generateWordDisplay()}
+                </h3>
+                <h3 className="mt-5">Guessed Letters</h3>
+                {this.state.guessedLetters.length > 0
+                  ? this.state.guessedLetters.toString()
+                  : "-"}
+                <p>Number of Guess left: {10 - this.state.wrongGuess}</p>
+                <InputForm
+                  updateGuess={this.updateGuess}
+                  addWrongGuess={this.addWrongGuess}
+                  gameOver={gameOver}
+                  restartGame={this.restartGame}
+                  guessedLetters={this.state.guessedLetters}
+                  currWord={this.state.currWord}
+                />
+                {this.generateResultStatement(hasPlayerWon)}
+              </Col>
+              <Col>
+                <Hangman wrongGuess={this.state.wrongGuess} />
+              </Col>
+            </Row>
+          </Container>
         </header>
       </div>
     );
