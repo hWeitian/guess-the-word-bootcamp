@@ -14,22 +14,9 @@ class InputForm extends React.Component {
       validity: false,
     };
   }
-  isCharIncluded = (currWord, currChar) => {
-    const tempObj = {};
-
-    for (let i = 0; i < currWord.length; i += 1) {
-      tempObj[currWord[i]] = true;
-    }
-
-    if (currChar in tempObj) {
-      return true;
-    }
-
-    return false;
-  };
 
   isInputCorrect = (input) => {
-    const isCharIncluded = this.isCharIncluded(
+    const isCharIncluded = this.props.isCharIncluded(
       this.props.guessedLetters,
       input
     );
@@ -61,21 +48,18 @@ class InputForm extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
+    const letter = this.state.input;
 
     if (this.state.validity) {
-      const letter = this.state.input;
-      const correctGuess = this.isCharIncluded(this.props.currWord, letter);
-
       this.setState({ input: "", validity: false });
-
-      if (!correctGuess) {
-        this.props.addWrongGuess();
-      }
-
       this.props.updateGuess(letter);
     } else {
       return null;
     }
+  };
+
+  handleClick = () => {
+    this.props.restartGame();
   };
 
   render() {
@@ -90,21 +74,21 @@ class InputForm extends React.Component {
                   placeholder="Enter one letter"
                   onChange={this.handleChange}
                   value={this.state.input}
-                  disabled={this.props.gameOver}
+                  disabled={this.props.gameStatus === "playing" ? false : true}
                 />
-                {this.props.gameOver ? (
-                  <CustomButton
-                    text="Play Again"
-                    onClick={this.props.restartGame}
-                    type="button"
-                    variant="warning"
-                  />
-                ) : (
+                {this.props.gameStatus === "playing" ? (
                   <CustomButton
                     text="Submit"
                     type="submit"
                     disabled={!this.state.validity}
                     variant="primary"
+                  />
+                ) : (
+                  <CustomButton
+                    text="Play Again"
+                    onClick={this.handleClick}
+                    type="button"
+                    variant="warning"
                   />
                 )}
               </Form.Group>

@@ -1,6 +1,4 @@
 import React from "react";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 
 class Hangman extends React.Component {
   displayImage = () => {
@@ -11,18 +9,14 @@ class Hangman extends React.Component {
       <img
         src={require(`../assets/hangman_${imgCount}.png`)}
         alt="hangman"
-        style={{ minWidth: "20%", maxWidth: "30%" }}
+        style={{ minWidth: "20%", maxWidth: "32%" }}
       />
     );
     return img;
   };
 
   render() {
-    return (
-      <Row>
-        <Col>{this.displayImage()}</Col>
-      </Row>
-    );
+    return <div>{this.displayImage()}</div>;
   }
 }
 
